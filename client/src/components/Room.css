@@ -1,0 +1,241 @@
+.room {
+  width: 100%;
+  max-width: 500px;
+  animation: fadeInUp 0.4s ease both;
+}
+
+.room-card {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.room-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border);
+}
+
+.room-name {
+  font-weight: 800;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.room-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ping-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ping-good {
+  background: var(--green-glow);
+  color: var(--green);
+}
+
+.ping-ok {
+  background: rgba(250, 204, 21, 0.15);
+  color: #facc15;
+}
+
+.ping-bad {
+  background: var(--red-glow);
+  color: var(--red);
+}
+
+.room-status {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--bg-primary);
+}
+
+.room-status.online {
+  color: var(--green);
+  background: var(--green-glow);
+}
+
+.members {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 100px;
+}
+
+.member {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  padding: 6px 8px;
+  border-radius: 8px;
+  transition: background 0.15s;
+  animation: slideInLeft 0.3s ease both;
+}
+
+.member:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.member.you {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.member-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: box-shadow 0.3s ease;
+}
+
+.avatar.speaking {
+  box-shadow: 0 0 0 2px var(--green), 0 0 12px var(--green-glow);
+  animation: pulse-ring 2s ease infinite;
+}
+
+.avatar.muted {
+  box-shadow: 0 0 0 2px var(--red), 0 0 8px var(--red-glow);
+  opacity: 0.6;
+}
+
+.avatar.connecting-peer {
+  box-shadow: 0 0 0 2px var(--text-secondary);
+  opacity: 0.4;
+}
+
+/* Badges */
+.badge {
+  font-size: 0.6rem;
+  padding: 2px 7px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+}
+
+.connected-badge {
+  background: var(--green-glow);
+  color: var(--green);
+}
+
+.connecting-badge {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  background-image: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.failed-badge {
+  background: var(--red-glow);
+  color: var(--red);
+}
+
+.muted-badge {
+  background: var(--red-glow);
+  color: var(--red);
+}
+
+.empty-hint {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 24px 0;
+  font-style: italic;
+  animation: fadeIn 0.5s ease;
+}
+
+/* Error state */
+.room-error {
+  padding: 32px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.room-error p {
+  color: var(--red);
+  font-size: 0.9rem;
+}
+
+.controls {
+  display: flex;
+  gap: 8px;
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+}
+
+.control-btn {
+  flex: 1;
+  padding: 11px;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.control-btn:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 2px 12px var(--accent-glow);
+}
+
+.muted-btn {
+  background: var(--red);
+  color: white;
+  border-color: var(--red);
+}
+
+.muted-btn:hover {
+  background: #e11d48;
+  border-color: #e11d48;
+  box-shadow: 0 2px 12px var(--red-glow);
+}
+
+.leave-btn:hover {
+  background: var(--red);
+  border-color: var(--red);
+  box-shadow: 0 2px 12px var(--red-glow);
+}

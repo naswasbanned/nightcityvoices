@@ -1,0 +1,124 @@
+.auth {
+  width: 100%;
+  max-width: 400px;
+}
+
+.auth-card {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 36px 32px;
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 60px var(--accent-glow);
+}
+
+.auth-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.auth-brand-icon {
+  font-size: 1.6rem;
+}
+
+.auth-card h2 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  text-align: center;
+  background: linear-gradient(135deg, var(--accent), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.auth-sub {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin-bottom: 24px;
+}
+
+.auth-card .field {
+  margin-bottom: 16px;
+}
+
+.auth-card .field label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.auth-card .field input {
+  width: 100%;
+  padding: 11px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.auth-card .field input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.auth-error {
+  color: var(--red);
+  font-size: 0.8rem;
+  margin-bottom: 12px;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.auth-btn {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, var(--accent), #7c3aed);
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border-radius: 8px;
+  margin-top: 4px;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px var(--accent-glow);
+}
+
+.auth-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.auth-switch {
+  text-align: center;
+  margin-top: 18px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.switch-btn {
+  background: none;
+  color: var(--cyan);
+  padding: 0 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.switch-btn:hover {
+  text-decoration: underline;
+  background: none;
+  color: var(--accent);
+}

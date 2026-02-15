@@ -1,0 +1,21 @@
+{
+  "name": "nightcity-voices-server",
+  "version": "1.0.0",
+  "description": "Night City Voices — Express + Socket.IO + WebRTC signaling",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "NODE_ENV=production node src/index.js",
+    "start:win": "set NODE_ENV=production && node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.3",
+    "socket.io": "^4.7.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
