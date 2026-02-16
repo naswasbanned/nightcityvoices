@@ -11,8 +11,17 @@ export default function GlobalChat({ username }) {
     // Ensure socket is connected so we receive global messages everywhere
     if (!socket.connected) socket.connect();
 
+    // Load chat history from server
+    socket.emit("get-global-history", (history) => {
+      if (Array.isArray(history) && history.length > 0) {
+        setMessages(history);
+      }
+    });
+
     function onGlobalMessage(msg) {
       setMessages((prev) => {
+        // Deduplicate (in case history overlaps with live)
+        if (prev.some((m) => m.id === msg.id)) return prev;
         const next = [...prev, msg];
         return next.length > 200 ? next.slice(-200) : next;
       });

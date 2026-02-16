@@ -1,6 +1,7 @@
 const express = require("express");
 const http = require("http");
 const path = require("path");
+const fs = require("fs");
 const { Server } = require("socket.io");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
@@ -10,6 +11,39 @@ const PORT = process.env.PORT || 3001;
 const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
 const JWT_SECRET = process.env.JWT_SECRET || "voicechat-secret-change-me";
 const IS_PROD = process.env.NODE_ENV === "production";
+
+// ---- Persistent global chat storage ----
+const CHAT_PATH = path.join(__dirname, "..", "data", "global-chat.json");
+const MAX_STORED_MESSAGES = 500;  // keep last 500 on disk
+
+function ensureChatFile() {
+  const dir = path.dirname(CHAT_PATH);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  if (!fs.existsSync(CHAT_PATH)) fs.writeFileSync(CHAT_PATH, "[]", "utf-8");
+}
+
+function readChatHistory() {
+  try {
+    ensureChatFile();
+    return JSON.parse(fs.readFileSync(CHAT_PATH, "utf-8"));
+  } catch (_) {
+    return [];
+  }
+}
+
+function appendChatMessage(msg) {
+  try {
+    const messages = readChatHistory();
+    messages.push(msg);
+    // Trim to last N messages
+    const trimmed = messages.length > MAX_STORED_MESSAGES
+      ? messages.slice(-MAX_STORED_MESSAGES)
+      : messages;
+    fs.writeFileSync(CHAT_PATH, JSON.stringify(trimmed, null, 2), "utf-8");
+  } catch (err) {
+    console.error("Failed to persist chat message:", err.message);
+  }
+}
 
 // Express
 const app = express();
@@ -207,7 +241,19 @@ io.on("connection", (socket) => {
       timestamp: Date.now(),
     };
 
+    // Persist to disk
+    appendChatMessage(msg);
+
     io.emit("global-message", msg);
+  });
+
+  // ---- Send chat history when client requests it ----
+  socket.on("get-global-history", (cb) => {
+    if (typeof cb === "function") {
+      const history = readChatHistory();
+      // Send last 100 messages to avoid large initial payload
+      cb(history.slice(-100));
+    }
   });
 
   // Disconnect — clean up whatever room this socket was in

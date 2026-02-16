@@ -9,11 +9,24 @@ const ICE_CONFIG = {
   iceServers: [
     { urls: "stun:stun.l.google.com:19302" },
     { urls: "stun:stun1.l.google.com:19302" },
-    { urls: "stun:stun2.l.google.com:19302" },
-    { urls: "stun:stun3.l.google.com:19302" },
-    // Add your own TURN server for reliable NAT traversal:
-    // { urls: "turn:your-turn-server.com:3478", username: "user", credential: "pass" },
+    // Free TURN relay servers (metered.ca OpenRelay) for NAT traversal
+    {
+      urls: "turn:openrelay.metered.ca:80",
+      username: "openrelayproject",
+      credential: "openrelayproject",
+    },
+    {
+      urls: "turn:openrelay.metered.ca:443",
+      username: "openrelayproject",
+      credential: "openrelayproject",
+    },
+    {
+      urls: "turn:openrelay.metered.ca:443?transport=tcp",
+      username: "openrelayproject",
+      credential: "openrelayproject",
+    },
   ],
+  iceCandidatePoolSize: 10,
 };
 
 // High-quality audio constraints (Opus-friendly)
@@ -106,14 +119,39 @@ export default function Room({ roomId, username, onLeave }) {
       }
     };
 
-    // Track connection state for UI
+    // Track connection state for UI + ICE restart on failure
     pc.onconnectionstatechange = () => {
-      const state = pc.connectionState; // "connecting" | "connected" | "disconnected" | "failed" | "closed"
+      const state = pc.connectionState;
       setPeerStates((prev) => ({ ...prev, [peerId]: state }));
 
       if (state === "failed") {
-        console.warn(`Peer connection to ${peerId} failed — closing.`);
-        closePeer(peerId);
+        console.warn(`Peer ${peerId} failed — attempting ICE restart...`);
+        try {
+          pc.restartIce();
+          // Re-create offer with iceRestart flag
+          pc.createOffer({ iceRestart: true }).then((offer) => {
+            pc.setLocalDescription(offer).then(() => {
+              socket.emit("offer", { to: peerId, offer });
+            });
+          }).catch(() => {
+            console.warn(`ICE restart failed for ${peerId} — closing.`);
+            closePeer(peerId);
+          });
+        } catch (_) {
+          closePeer(peerId);
+        }
+      }
+    };
+
+    // Also watch ICE connection state for disconnected peers
+    pc.oniceconnectionstatechange = () => {
+      if (pc.iceConnectionState === "disconnected") {
+        // Give it a few seconds, then try restart
+        setTimeout(() => {
+          if (pc.iceConnectionState === "disconnected") {
+            try { pc.restartIce(); } catch (_) {}
+          }
+        }, 3000);
       }
     };
 
@@ -127,6 +165,7 @@ export default function Room({ roomId, username, onLeave }) {
       pc.ontrack = null;
       pc.onicecandidate = null;
       pc.onconnectionstatechange = null;
+      pc.oniceconnectionstatechange = null;
       pc.close();
       delete peerConnections.current[peerId];
     }
@@ -183,6 +222,7 @@ export default function Room({ roomId, username, onLeave }) {
         pc.ontrack = null;
         pc.onicecandidate = null;
         pc.onconnectionstatechange = null;
+        pc.oniceconnectionstatechange = null;
         pc.close();
       }
     });
@@ -202,7 +242,6 @@ export default function Room({ roomId, username, onLeave }) {
     socket.off("offer");
     socket.off("answer");
     socket.off("ice-candidate");
-    socket.off("pong-check");
 
     // Do NOT call socket.disconnect() — the socket is shared.
     // Leaving the room via "leave-room" event is sufficient.
@@ -232,10 +271,9 @@ export default function Room({ roomId, username, onLeave }) {
         playJoinSound();
 
         // 3. Start ping measurement
-        socket.on("pong-check", () => {}); // server will emit this back
         pingInterval.current = setInterval(() => {
           const start = Date.now();
-          socket.volatile.emit("ping-check", () => {
+          socket.emit("ping-check", () => {
             if (!cleanedUp.current) setPing(Date.now() - start);
           });
         }, PING_INTERVAL);
